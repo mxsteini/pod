@@ -53,3 +53,53 @@
 [Fri Nov 08 10:36:22.712189 2019] [proxy_fcgi:error] [pid 3:tid 140457458566912] [client 10.0.2.2:48876] AH01079: failed to make connection to backend: 127.0.0.1
 [Fri Nov 08 10:36:23.771588 2019] [proxy:error] [pid 3:tid 140457224951552] (111)Connection refused: AH00957: FCGI: attempt to connect to 127.0.0.1:9000 (*) failed
 [Fri Nov 08 10:36:23.771685 2019] [proxy_fcgi:error] [pid 3:tid 140457224951552] [client 10.0.2.2:48880] AH01079: failed to make connection to backend: 127.0.0.1
+[Fri Nov 08 12:48:26.699314 2019] [proxy:error] [pid 3:tid 139740947814144] (111)Connection refused: AH00957: FCGI: attempt to connect to 127.0.0.1:9000 (*) failed
+[Fri Nov 08 12:48:26.699648 2019] [proxy_fcgi:error] [pid 3:tid 139740947814144] [client 10.0.2.2:50464] AH01079: failed to make connection to backend: 127.0.0.1
+[Fri Nov 08 12:48:27.529553 2019] [proxy:error] [pid 5:tid 139740939413248] (111)Connection refused: AH00957: FCGI: attempt to connect to 127.0.0.1:9000 (*) failed
+[Fri Nov 08 12:48:27.529664 2019] [proxy_fcgi:error] [pid 5:tid 139740939413248] [client 10.0.2.2:50466] AH01079: failed to make connection to backend: 127.0.0.1
+[Fri Nov 08 12:48:28.496503 2019] [proxy:error] [pid 3:tid 139740577785600] (111)Connection refused: AH00957: FCGI: attempt to connect to 127.0.0.1:9000 (*) failed
+[Fri Nov 08 12:48:28.496601 2019] [proxy_fcgi:error] [pid 3:tid 139740577785600] [client 10.0.2.2:50470] AH01079: failed to make connection to backend: 127.0.0.1
+[Fri Nov 08 12:48:28.692792 2019] [proxy:error] [pid 4:tid 139740939413248] (111)Connection refused: AH00957: FCGI: attempt to connect to 127.0.0.1:9000 (*) failed
+[Fri Nov 08 12:48:28.692885 2019] [proxy_fcgi:error] [pid 4:tid 139740939413248] [client 10.0.2.2:50474] AH01079: failed to make connection to backend: 127.0.0.1
+[Fri Nov 08 12:48:28.941808 2019] [proxy:error] [pid 5:tid 139740712003328] (111)Connection refused: AH00957: FCGI: attempt to connect to 127.0.0.1:9000 (*) failed
+[Fri Nov 08 12:48:28.941883 2019] [proxy_fcgi:error] [pid 5:tid 139740712003328] [client 10.0.2.2:50478] AH01079: failed to make connection to backend: 127.0.0.1
+[Fri Nov 08 12:48:29.210480 2019] [proxy:error] [pid 5:tid 139740678432512] (111)Connection refused: AH00957: FCGI: attempt to connect to 127.0.0.1:9000 (*) failed
+[Fri Nov 08 12:48:29.210601 2019] [proxy_fcgi:error] [pid 5:tid 139740678432512] [client 10.0.2.2:50482] AH01079: failed to make connection to backend: 127.0.0.1
+[Fri Nov 08 12:48:29.457585 2019] [proxy:error] [pid 4:tid 139740837828352] (111)Connection refused: AH00957: FCGI: attempt to connect to 127.0.0.1:9000 (*) failed
+[Fri Nov 08 12:48:29.457685 2019] [proxy_fcgi:error] [pid 4:tid 139740837828352] [client 10.0.2.2:50486] AH01079: failed to make connection to backend: 127.0.0.1
+[Fri Nov 08 12:57:11.894130 2019] [proxy:error] [pid 4:tid 139664942163712] (111)Connection refused: AH00957: FCGI: attempt to connect to 127.0.0.1:9000 (*) failed
+[Fri Nov 08 12:57:11.894681 2019] [proxy_fcgi:error] [pid 4:tid 139664942163712] [client 10.0.2.2:50634] AH01079: failed to make connection to backend: 127.0.0.1
+[Fri Nov 08 13:11:31.158681 2019] [proxy:error] [pid 5:tid 140596704327424] (111)Connection refused: AH00957: FCGI: attempt to connect to 127.0.0.1:9000 (*) failed
+[Fri Nov 08 13:11:31.159082 2019] [proxy_fcgi:error] [pid 5:tid 140596704327424] [client 10.0.2.2:50858] AH01079: failed to make connection to backend: 127.0.0.1
+[Fri Nov 08 14:07:08.150282 2019] [proxy:error] [pid 3:tid 140596442273536] (111)Connection refused: AH00957: FCGI: attempt to connect to 127.0.0.1:9000 (*) failed
+[Fri Nov 08 14:07:08.150470 2019] [proxy_fcgi:error] [pid 3:tid 140596442273536] [client 10.0.2.2:52070] AH01079: failed to make connection to backend: 127.0.0.1
+[Fri Nov 08 14:07:09.024412 2019] [proxy:error] [pid 5:tid 140595796363008] (111)Connection refused: AH00957: FCGI: attempt to connect to 127.0.0.1:9000 (*) failed
+[Fri Nov 08 14:07:09.024579 2019] [proxy_fcgi:error] [pid 5:tid 140595796363008] [client 10.0.2.2:52072] AH01079: failed to make connection to backend: 127.0.0.1
+[Fri Nov 08 14:07:09.310604 2019] [proxy:error] [pid 4:tid 140595007842048] (111)Connection refused: AH00957: FCGI: attempt to connect to 127.0.0.1:9000 (*) failed
+[Fri Nov 08 14:07:09.310707 2019] [proxy_fcgi:error] [pid 4:tid 140595007842048] [client 10.0.2.2:52076] AH01079: failed to make connection to backend: 127.0.0.1
+[Fri Nov 08 14:07:09.556056 2019] [proxy:error] [pid 4:tid 140596626847488] (111)Connection refused: AH00957: FCGI: attempt to connect to 127.0.0.1:9000 (*) failed
+[Fri Nov 08 14:07:09.556130 2019] [proxy_fcgi:error] [pid 4:tid 140596626847488] [client 10.0.2.2:52080] AH01079: failed to make connection to backend: 127.0.0.1
+[Fri Nov 08 14:07:09.787101 2019] [proxy:error] [pid 3:tid 140595687323392] (111)Connection refused: AH00957: FCGI: attempt to connect to 127.0.0.1:9000 (*) failed
+[Fri Nov 08 14:07:09.787176 2019] [proxy_fcgi:error] [pid 3:tid 140595687323392] [client 10.0.2.2:52084] AH01079: failed to make connection to backend: 127.0.0.1
+[Fri Nov 08 15:38:32.266981 2019] [core:alert] [pid 5:tid 139780936173312] [client 10.0.2.2:56334] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php?install%5Bcontroller%5D=environment
+[Fri Nov 08 15:38:32.267621 2019] [core:alert] [pid 87:tid 139779643537152] [client 10.0.2.2:56336] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php?install%5Bcontroller%5D=environment
+[Fri Nov 08 15:38:32.269214 2019] [core:alert] [pid 5:tid 139780927772416] [client 10.0.2.2:56340] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php?install%5Bcontroller%5D=environment
+[Fri Nov 08 15:38:32.269300 2019] [core:alert] [pid 87:tid 139779635144448] [client 10.0.2.2:56342] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php?install%5Bcontroller%5D=environment
+[Fri Nov 08 15:38:32.272311 2019] [core:alert] [pid 87:tid 139779626751744] [client 10.0.2.2:56344] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php?install%5Bcontroller%5D=environment
+[Fri Nov 08 15:38:32.274477 2019] [core:alert] [pid 87:tid 139779593180928] [client 10.0.2.2:56346] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php?install%5Bcontroller%5D=environment
+[Fri Nov 08 15:38:32.276675 2019] [core:alert] [pid 87:tid 139780944574208] [client 10.0.2.2:56348] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php?install%5Bcontroller%5D=environment
+[Fri Nov 08 15:38:32.283031 2019] [core:alert] [pid 5:tid 139780843104000] [client 10.0.2.2:56350] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php?install%5Bcontroller%5D=environment
+[Fri Nov 08 15:38:33.181567 2019] [core:alert] [pid 87:tid 139780583061248] [client 10.0.2.2:56352] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php?install%5Bcontroller%5D=environment
+[Fri Nov 08 15:38:33.182258 2019] [core:alert] [pid 5:tid 139780817925888] [client 10.0.2.2:56354] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php?install%5Bcontroller%5D=environment
+[Fri Nov 08 15:38:33.183367 2019] [core:alert] [pid 87:tid 139780566275840] [client 10.0.2.2:56358] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php?install%5Bcontroller%5D=environment
+[Fri Nov 08 15:38:33.183468 2019] [core:alert] [pid 87:tid 139780557883136] [client 10.0.2.2:56360] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php?install%5Bcontroller%5D=environment
+[Fri Nov 08 15:38:33.186199 2019] [core:alert] [pid 4:tid 139780952975104] [client 10.0.2.2:56362] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php?install%5Bcontroller%5D=environment
+[Fri Nov 08 15:38:33.188096 2019] [core:alert] [pid 87:tid 139780532705024] [client 10.0.2.2:56364] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php?install%5Bcontroller%5D=environment
+[Fri Nov 08 15:38:33.189955 2019] [core:alert] [pid 5:tid 139780809533184] [client 10.0.2.2:56366] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php?install%5Bcontroller%5D=environment
+[Fri Nov 08 15:38:33.193645 2019] [core:alert] [pid 5:tid 139780507559680] [client 10.0.2.2:56368] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php?install%5Bcontroller%5D=environment
+[Fri Nov 08 15:38:44.941274 2019] [core:alert] [pid 87:tid 139780029404928] [client 10.0.2.2:56370] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php
+[Fri Nov 08 15:38:44.942800 2019] [core:alert] [pid 87:tid 139780021012224] [client 10.0.2.2:56372] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php
+[Fri Nov 08 15:38:44.943178 2019] [core:alert] [pid 4:tid 139780834711296] [client 10.0.2.2:56378] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php
+[Fri Nov 08 15:38:44.943183 2019] [core:alert] [pid 87:tid 139780012619520] [client 10.0.2.2:56376] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php
+[Fri Nov 08 15:38:44.945819 2019] [core:alert] [pid 5:tid 139780490774272] [client 10.0.2.2:56380] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php
+[Fri Nov 08 15:38:44.949677 2019] [core:alert] [pid 87:tid 139779618359040] [client 10.0.2.2:56382] /var/www/web/.htaccess: Require not allowed in <If> context, referer: http://b.vagrant:8080/typo3/install.php

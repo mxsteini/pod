@@ -30,8 +30,16 @@ for i in "$@"; do
     command='create'
     shift
     ;;
-  --composer)
-    command='composer'
+  --composer7.3)
+    command='composer7.3'
+    shift
+    ;;
+  --console)
+    command='console'
+    shift
+    ;;
+  --php)
+    command='php'
     shift
     ;;
   --build)
@@ -49,8 +57,19 @@ done
 #      --volume /home/mst/Projekte/Docker/apache2/:/usr/local/apache2/conf/ \
 case "${command}" in
 build)
-  podman build --tag myfpm:7.2 -f Dockerfiles/php7.2
-  #  podman build --tag mycomposer -f Dockerfiles/composer
+  podman build --tag composer:7.3 -f Dockerfiles/composer7.3
+  #  podman build --tag myfpm:7.3 -f Dockerfiles/php7.3
+  #  podman build --tag myfpm:7.2 -f Dockerfiles/php7.2
+  #  podman build --tag mycomposer -f Dockerfiles/composer7.3
+  ;;
+php)
+  podman run -it \
+    --name testphp \
+    --volume /home/mst/Projekte/Docker/log/:/var/log/:Z \
+    --volume /home/mst/Projekte/BAIN3/typo3/:/var/www/html/:z \
+    --volume ./etc/php7.2/:/usr/local/etc/php-fpm.d/:z \
+    myfpm:7.2 \
+    /bin/bash
   ;;
 create)
   podman pod create --infra --name cyzpod -p 8080:80 -p 3306
@@ -64,33 +83,34 @@ create)
   podman run -dit \
     --pod cyzpod \
     --name php72 \
-    --privileged \
-    --user 1000:1000 \
-    --security-opt label=disable \
     --volume /home/mst/Projekte/Docker/log/:/var/log/:Z \
-    --volume /home/mst/Projekte/BAIN3/typo3/:/var/www/html/:z \
+    --volume /home/mst/Projekte/BAIN3/typo3/:/var/www/html/:Z \
     --volume ./etc/php7.2/:/usr/local/etc/php-fpm.d/:z \
-    myfpm:7.2
+    myfpm:7.3 \
+    php-fpm -R
   podman run -dit \
     --pod cyzpod \
     --name db \
     --volume /home/mst/Projekte/Docker/db/:/var/lib/mysql:Z \
     -e MYSQL_ROOT_PASSWORD=root \
     mariadb:latest
-  #      cat /usr/local/apache2/conf/original/httpd.conf
-  #      cat /usr/local/apache2/conf/extra/proxy-html.conf
-  #      cat /var/www/index.html
+  ;;
+console)
+  podman run -it \
+    --volume /home/mst/Projekte/Docker/log/:/var/log/:Z \
+    --volume /home/mst/Projekte/BAIN3/typo3/:/var/www/html/:Z \
+    --volume ./etc/php7.2/:/usr/local/etc/php-fpm.d/:z \
+    myfpm:7.3 \
+    /bin/bash
   ;;
 up)
   podman pod start cyzpod
   ;;
-composer)
+composer7.3)
   podman run --name mycomposer --rm --interactive --tty \
-    --privileged \
-    --user 1000:1000 \
-    --security-opt label=disable \
+    --volume ${COMPOSER_HOME:-$HOME/.composer}:/tmp \
     --volume /home/mst/Projekte/BAIN3/typo3/:/app/:Z \
-    composer install --ignore-platform-reqs --no-scripts --prefer-source
+    composer:7.3 $@ --no-scripts
   ;;
 down)
   podman pod stop cyzpod
@@ -109,7 +129,6 @@ exit
 #      --volume /home/mst/Projekte/Docker/html/:/usr/local/apache2/htdocs/:z \
 #      --volume /home/mst/Projekte/Docker/apache2/:/usr/local/apache2/conf/:Z \
 
---privileged \
-  --userns=""
---user 1000:1000 \
-  --security-opt label=disable
+#--privileged \
+#--user 1000:1000 \
+#  --security-opt label=disable

@@ -14,19 +14,15 @@ target='/var/www/www.pixelmat.ch'
 
 for i in "$@"; do
   case $i in
-  -u | --up)
+  --up)
     command='up'
     shift
     ;;
-  -d | --down)
+  --down)
     command='down'
     shift
     ;;
-  -p | --pull)
-    command='pull'
-    shift
-    ;;
-  -c | --create)
+  --create)
     command='create'
     shift
     ;;
@@ -34,86 +30,99 @@ for i in "$@"; do
     command='composer7.3'
     shift
     ;;
-  --console)
-    command='console'
+  --composer7.2)
+    command='composer7.2'
     shift
     ;;
-  --php)
-    command='php'
+  --console7.2)
+    command='console7.2'
+    shift
+    ;;
+  --enter)
+    command='enter'
+    shift
+    echo $1
+    container=$1
+    shift
+    ;;
+  --restart)
+    command='restart'
     shift
     ;;
   --build)
     command='build'
     shift
     ;;
-  -r | --rm)
+  --rm)
     command='rm'
     shift
     ;;
   esac
 done
-#      -e HTTPD_LOG_TO_VOLUME=1 \
-#      --volume /home/mst/Projekte/Docker/wwwlogs:/var/log/httpd24:Z \
-#      --volume /home/mst/Projekte/Docker/apache2/:/usr/local/apache2/conf/ \
+
 case "${command}" in
 build)
-  podman build --tag composer:7.3 -f Dockerfiles/composer7.3
-  #  podman build --tag myfpm:7.3 -f Dockerfiles/php7.3
-  #  podman build --tag myfpm:7.2 -f Dockerfiles/php7.2
-  #  podman build --tag mycomposer -f Dockerfiles/composer7.3
-  ;;
-php)
-  podman run -it \
-    --name testphp \
-    --volume /home/mst/Projekte/Docker/log/:/var/log/:Z \
-    --volume /home/mst/Projekte/BAIN3/typo3/:/var/www/html/:z \
-    --volume ./etc/php7.2/:/usr/local/etc/php-fpm.d/:z \
-    myfpm:7.2 \
-    /bin/bash
+#  podman build --tag composer:7.3 -f Dockerfiles/composer7.3
+  podman build --tag composer:7.2 -f Dockerfiles/composer7.2
+#  podman build --tag myfpm:7.3 -f Dockerfiles/php7.3
+  podman build --tag myfpm:7.2 -f Dockerfiles/php7.2
   ;;
 create)
-  podman pod create --infra --name cyzpod -p 8080:80 -p 3306
+  podman pod create --infra --name cyzpod \
+    -p 8080:80 -p 3306:3306
   podman run -dit \
     --pod cyzpod \
     --name httpd \
-    --volume /home/mst/Projekte/BAIN3/typo3/:/var/www/:z \
-    --volume /home/mst/Projekte/Docker/log/:/usr/local/apache2/logs/:Z \
-    --volume /home/mst/Projekte/Docker/etc/apache2/:/usr/local/apache2/conf/:Z \
+    --volume ~/Projekte/:/var/www/:z \
+    --volume ~/Projekte/Docker/log/:/usr/local/apache2/logs/:Z \
+    --volume ~/Projekte/Docker/etc/apache2/:/usr/local/apache2/conf/:Z \
     httpd:2.4
   podman run -dit \
     --pod cyzpod \
     --name php72 \
-    --volume /home/mst/Projekte/Docker/log/:/var/log/:Z \
-    --volume /home/mst/Projekte/BAIN3/typo3/:/var/www/html/:Z \
+    --volume ~/Projekte/Docker/log/:/var/log/:z \
+    --volume ~/Projekte/:/var/www/html/:z \
     --volume ./etc/php7.2/:/usr/local/etc/php-fpm.d/:z \
-    myfpm:7.3 \
+    myfpm:7.2 \
     php-fpm -R
-  podman run -dit \
+  podman run \
+    --env MARIADB_USER=vagrant \
+    --env MARIADB_PASSWORD=vagrant \
+    --env MARIADB_DATABASE=vagrant \
+    --env MARIADB_ROOT_PASSWORD=root \
     --pod cyzpod \
     --name db \
-    --volume /home/mst/Projekte/Docker/db/:/var/lib/mysql:Z \
-    -e MYSQL_ROOT_PASSWORD=root \
-    mariadb:latest
+    --volume ~/Projekte/Docker/db/:/var/lib/mysql/:Z \
+    -d bitnami/mariadb:latest
   ;;
-console)
-  podman run -it \
-    --volume /home/mst/Projekte/Docker/log/:/var/log/:Z \
-    --volume /home/mst/Projekte/BAIN3/typo3/:/var/www/html/:Z \
-    --volume ./etc/php7.2/:/usr/local/etc/php-fpm.d/:z \
-    myfpm:7.3 \
+enter)
+  podman exec -it \
+    $container \
     /bin/bash
+  ;;
+restart)
+  ./pod.sh --down
+  ./pod.sh --up
   ;;
 up)
   podman pod start cyzpod
   ;;
-composer7.3)
-  podman run --name mycomposer --rm --interactive --tty \
-    --volume ${COMPOSER_HOME:-$HOME/.composer}:/tmp \
-    --volume /home/mst/Projekte/BAIN3/typo3/:/app/:Z \
-    composer:7.3 $@ --no-scripts
+console7.2)
+  podman run --name console7.2 --rm --interactive --tty \
+    --pod cyzpod \
+    --volume ~/Projekte/Docker/log/:/var/log/:z \
+    --volume $PWD:/var/www/html/:z \
+    --volume ~/Projekte/Docker/etc/php7.2/:/usr/local/etc/php-fpm.d/:z \
+    myfpm:7.2 "$@"
+  ;;
+composer7.2)
+  podman run --name composer7.2 --rm --interactive --tty \
+    --volume ~/.composer:/tmp:Z \
+    --volume $PWD:/app/:Z \
+    composer:7.2 "$@"
   ;;
 down)
-  podman pod stop cyzpod
+  podman stop --all
   ;;
 rm)
   ./pod.sh --down
@@ -123,12 +132,4 @@ rm)
   podman pod rm cyzpod
   ;;
 esac
-
 exit
-
-#      --volume /home/mst/Projekte/Docker/html/:/usr/local/apache2/htdocs/:z \
-#      --volume /home/mst/Projekte/Docker/apache2/:/usr/local/apache2/conf/:Z \
-
-#--privileged \
-#--user 1000:1000 \
-#  --security-opt label=disable

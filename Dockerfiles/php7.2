@@ -9,14 +9,8 @@ RUN apt-get update && apt-get install -y \
 RUN docker-php-ext-install mysqli pdo json
 RUN apt-get install -y libxml2-dev
 RUN docker-php-ext-install xml
-# RUN docker-php-ext-install filter
 RUN docker-php-ext-install hash
 RUN docker-php-ext-install  mbstring
-# RUN docker-php-ext-install spl
 RUN docker-php-ext-install zip
-# RUN docker-php-ext-install zlib
-# RUN docker-php-ext-configure openssl --with-openssl
-# RUN docker-php-ext-install openssl
 RUN docker-php-ext-install intl
-# RUN docker-php-ext-install pcre
 RUN docker-php-ext-enable opcache.so

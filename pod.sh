@@ -59,11 +59,11 @@ installMe)
   mkdir -p ~/.cyzpod/database
   mkdir -p ~/.cyzpod/log/
   cp -r etc ~/.cyzpod/
-;;
+  ;;
 build)
-#  podman build --tag composer:7.3 -f Dockerfiles/composer7.3
+  #  podman build --tag composer:7.3 -f Dockerfiles/composer7.3
   podman build --tag composer:7.2 -f Dockerfiles/composer7.2
-#  podman build --tag myfpm:7.3 -f Dockerfiles/php7.3
+  #  podman build --tag myfpm:7.3 -f Dockerfiles/php7.3
   podman build --tag myfpm:7.2 -f Dockerfiles/php7.2
   ;;
 create)
@@ -84,15 +84,15 @@ create)
     --volume ~/.cyzpod/etc/php7.2/:/usr/local/etc/php-fpm.d/:z \
     myfpm:7.2 \
     php-fpm -R
-  podman run \
+  podman run -dit \
     --env MARIADB_USER=vagrant \
     --env MARIADB_PASSWORD=vagrant \
     --env MARIADB_DATABASE=vagrant \
     --env MARIADB_ROOT_PASSWORD=root \
     --pod cyzpod \
     --name db \
-    --volume ~/.cyzpod/database/:/var/lib/mysql/:Z \
-    -d bitnami/mariadb:latest
+    --volume ~/.cyzpod/database/:/bitnami/mariadb:Z \
+    bitnami/mariadb:latest
   ;;
 enter)
   podman exec -it \
@@ -100,8 +100,8 @@ enter)
     /bin/bash
   ;;
 restart)
-  ./pod.sh --down
-  ./pod.sh --up
+  pod.sh --down
+  pod.sh --up
   ;;
 up)
   podman pod start cyzpod
@@ -124,7 +124,7 @@ down)
   podman stop --all
   ;;
 rm)
-  ./pod.sh --down
+  pod.sh --down
   podman rm httpd
   podman rm php72
   podman rm db

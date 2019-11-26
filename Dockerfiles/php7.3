@@ -13,3 +13,5 @@ RUN docker-php-ext-install hash
 RUN docker-php-ext-install  mbstring
 RUN docker-php-ext-install intl
 RUN docker-php-ext-enable opcache.so
+RUN apt-get update && apt-get install -y \
+        graphicsmagick

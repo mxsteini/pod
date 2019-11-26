@@ -150,15 +150,28 @@ rm)
 createProject)
   source ~/.cyzpod/config
 
-  if [[ $projectName == '' ]]; 
-  then
+  if [[ $projectName == '' ]]; then
     echo -e '\033[0;31m'Error No project name specified
+    exit
+  fi
+
+  sitesPath=~/.cyzpod/etc/apache2/sites-enabled/020-"$projectName".conf
+
+  if [ -f "$sitesPath" ]; then
+    echo -e '\033[0;31m'Error project already exists 
     exit
   fi
 
   defaultProjectType='php72'
   read -p "Please enter project type [$defaultProjectType]: " projectType
   projectType=${projectType:-${defaultProjectType}}
+
+  skelPath=~/.cyzpod/etc/apache2/sites-enabled/"$projectType".skel
+
+  if [ ! -f "$skelPath" ]; then
+    echo -e '\033[0;31m'Error No such project type "$projectType"
+    exit
+  fi
 
   pwd=`pwd`
   defaultDocumentRoot=${pwd#"$projectDir/"}
@@ -168,22 +181,6 @@ createProject)
 
   read -p "Please enter a database name [$projectName]: " databaseName
   databaseName=${databaseName:-${projectName}}
-
-  sitesPath=~/.cyzpod/etc/apache2/sites-enabled/020-"$projectName".conf
-
-  if [ -f "$sitesPath" ];
-  then
-    echo -e '\033[0;31m'Error project already exists 
-    exit
-  fi
-
-  skelPath=~/.cyzpod/etc/apache2/sites-enabled/"$projectType".skel
-
-  if [ ! -f "$skelPath" ];
-  then
-    echo -e '\033[0;31m'Error No such project type "$projectType"
-    exit
-  fi
 
   cp "$skelPath" "$sitesPath"
 

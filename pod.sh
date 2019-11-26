@@ -13,8 +13,6 @@ for i in "$@"; do
   --create)
     command='create'
     shift
-    projects=$1
-    shift
     ;;
   --composer7.3)
     command='composer7.3'
@@ -46,19 +44,30 @@ for i in "$@"; do
     command='rm'
     shift
     ;;
-  --installMe)
-    command='installMe'
+  --init)
+    command='init'
     shift
     ;;
   esac
 done
 
 case "${command}" in
-installMe)
-  ln -s $SCRIPT ~/bin
-  mkdir -p ~/.cyzpod/database
-  mkdir -p ~/.cyzpod/log/
+init)
+    default=`pwd`
+  install -m 777 -d ~/.cyzpod/database
+  install -m 777 -d ~/.cyzpod/log
   cp -r etc ~/.cyzpod/
+
+  echo -n "Please enter projects dir [$default]: "
+
+  read projectDir
+
+  if [[ $projectDir == '' ]]; then
+      projectDir=$default
+  fi
+
+  echo 'projectDir="'$projectDir'"' > ~/.cyzpod/config
+
   ;;
 build)
   #  podman build --tag composer:7.3 -f Dockerfiles/composer7.3
@@ -67,12 +76,13 @@ build)
   podman build --tag myfpm:7.2 -f Dockerfiles/php7.2
   ;;
 create)
+    source ~/.cyzpod/config
   podman pod create --infra --name cyzpod \
     -p 8080:80 -p 3306:3306
   podman run -dit \
     --pod cyzpod \
     --name httpd \
-    --volume $projects/:/var/www/:z \
+    --volume $projectDir/:/var/www/:z \
     --volume ~/.cyzpod/log/:/usr/local/apache2/logs/:Z \
     --volume ~/.cyzpod/etc/apache2/:/usr/local/apache2/conf/:Z \
     httpd:2.4
@@ -80,7 +90,7 @@ create)
     --pod cyzpod \
     --name php72 \
     --volume ~/.cyzpod/log/:/var/log/:z \
-    --volume $projects/:/var/www/html/:z \
+    --volume $projectDir/:/var/www/html/:z \
     --volume ~/.cyzpod/etc/php7.2/:/usr/local/etc/php-fpm.d/:z \
     myfpm:7.2 \
     php-fpm -R

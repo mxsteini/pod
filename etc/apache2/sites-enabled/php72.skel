@@ -1,0 +1,24 @@
+<VirtualHost *:80>
+  ServerName ###SERVERNAME###
+  ServerAlias ###SERVERNAME###
+  DocumentRoot /var/www/###DOCUMENTROOT###
+
+  SetEnv TYPO3_CONTEXT Development/Vagrant
+  ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9000/var/www/html/###DOCUMENTROOT###/$1
+
+  RewriteCond %{REQUEST_FILENAME} \.php$
+  RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_URI} !-f
+  RewriteRule (.*) - [H=text/html]
+
+  <Directory "/var/www/###DOCUMENTROOT###">
+    Options +FollowSymLinks -Indexes
+    Options +ExecCGI
+    AllowOverride FileInfo Indexes
+
+    Require all granted
+    DirectoryIndex index.html index.php
+  </Directory>
+	ErrorLog logs/error.log
+	CustomLog logs/access.log combined
+
+</VirtualHost>

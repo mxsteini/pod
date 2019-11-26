@@ -48,26 +48,33 @@ for i in "$@"; do
     command='init'
     shift
     ;;
+  --install)
+    command='install'
+    shift
+    ;;
+  --createProject)
+    command='createProject'
+    shift
+    projectName=$1
+    shift
+    ;;
   esac
 done
 
 case "${command}" in
 init)
-    default=`pwd`
+  defaultDir=`pwd`
+
+  read -p "Please enter projects dir [$defaultDir]: " projectDir
+  projectDir=${projectDir:-${defaultDir}}
+
+  echo 'projectDir="'$projectDir'"' > ~/.cyzpod/config
+  ;;
+install)
   install -m 777 -d ~/.cyzpod/database
   install -m 777 -d ~/.cyzpod/log
   cp -r etc ~/.cyzpod/
-
-  echo -n "Please enter projects dir [$default]: "
-
-  read projectDir
-
-  if [[ $projectDir == '' ]]; then
-      projectDir=$default
-  fi
-
-  echo 'projectDir="'$projectDir'"' > ~/.cyzpod/config
-
+  install pod.sh ~/bin/pod.sh
   ;;
 build)
   #  podman build --tag composer:7.3 -f Dockerfiles/composer7.3
@@ -139,6 +146,52 @@ rm)
   podman rm php72
   podman rm db
   podman pod rm cyzpod
+  ;;
+createProject)
+  source ~/.cyzpod/config
+
+  if [[ $projectName == '' ]]; 
+  then
+    echo -e '\033[0;31m'Error No project name specified
+    exit
+  fi
+
+  defaultProjectType='php72'
+  read -p "Please enter project type [$defaultProjectType]: " projectType
+  projectType=${projectType:-${defaultProjectType}}
+
+  pwd=`pwd`
+  defaultDocumentRoot=${pwd#"$projectDir/"}
+
+  read -p "Please enter document root [$defaultDocumentRoot]: " documentRoot
+  documentRoot=${documentRoot:-${defaultDocumentRoot}}
+
+  read -p "Please enter a database name [$projectName]: " databaseName
+  databaseName=${databaseName:-${projectName}}
+
+  sitesPath=~/.cyzpod/etc/apache2/sites-enabled/020-"$projectName".conf
+
+  if [ -f "$sitesPath" ];
+  then
+    echo -e '\033[0;31m'Error project already exists 
+    exit
+  fi
+
+  skelPath=~/.cyzpod/etc/apache2/sites-enabled/"$projectType".skel
+
+  if [ ! -f "$skelPath" ];
+  then
+    echo -e '\033[0;31m'Error No such project type "$projectType"
+    exit
+  fi
+
+  cp "$skelPath" "$sitesPath"
+
+  mysql -h 127.0.0.1 -u root -proot -e "create database $databaseName;"
+
+  sed -i "s|###DOCUMENTROOT###|$documentRoot|g" $sitesPath
+  sed -i "s|###SERVERNAME###|$projectName.pod|g" $sitesPath
+
   ;;
 esac
 exit

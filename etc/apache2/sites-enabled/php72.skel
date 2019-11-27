@@ -3,7 +3,7 @@
   ServerAlias ###SERVERNAME###
   DocumentRoot /var/www/###DOCUMENTROOT###
 
-  SetEnv TYPO3_CONTEXT Development/Vagrant
+  SetEnv TYPO3_CONTEXT Development/Podman
   ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9000/var/www/html/###DOCUMENTROOT###/$1
 
   RewriteCond %{REQUEST_FILENAME} \.php$

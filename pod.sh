@@ -14,16 +14,16 @@ for i in "$@"; do
     command='create'
     shift
     ;;
-  --composer7.3)
-    command='composer7.3'
+  --composer)
+    command='composer'
+    shift
+    version=$1
     shift
     ;;
-  --composer7.2)
-    command='composer7.2'
+  --console)
+    command='console'
     shift
-    ;;
-  --console7.2)
-    command='console7.2'
+    version=$1
     shift
     ;;
   --enter)
@@ -77,10 +77,10 @@ install)
   install pod.sh ~/bin/pod.sh
   ;;
 build)
-  #  podman build --tag composer:7.3 -f Dockerfiles/composer7.3
-  podman build --tag composer:7.2 -f Dockerfiles/composer7.2
-  #  podman build --tag myfpm:7.3 -f Dockerfiles/php7.3
+#  podman build --tag composer:7.2 -f Dockerfiles/composer7.2
   podman build --tag myfpm:7.2 -f Dockerfiles/php7.2
+#  podman build --tag composer:7.3 -f Dockerfiles/composer7.3
+#  podman build --tag myfpm:7.3 -f Dockerfiles/php7.3
   ;;
 create)
     source ~/.cyzpod/config
@@ -101,6 +101,14 @@ create)
     --volume ~/.cyzpod/etc/php7.2/:/usr/local/etc/php-fpm.d/:z \
     myfpm:7.2 \
     php-fpm -R
+#  podman run -dit \
+#    --pod cyzpod \
+#    --name php73 \
+#    --volume ~/.cyzpod/log/:/var/log/:z \
+#    --volume $projectDir/:/var/www/html/:z \
+#    --volume ~/.cyzpod/etc/php7.3/:/usr/local/etc/php-fpm.d/:z \
+#    myfpm:7.3 \
+#    php-fpm -R
   podman run -dit \
     --env MARIADB_USER=vagrant \
     --env MARIADB_PASSWORD=vagrant \
@@ -123,19 +131,19 @@ restart)
 up)
   podman pod start cyzpod
   ;;
-console7.2)
-  podman run --name console7.2 --rm --interactive --tty \
+console)
+  podman run --name console${version} --rm --interactive --tty \
     --pod cyzpod \
     --volume ~/.cyzpod/log/:/var/log/:z \
     --volume $PWD:/var/www/html/:z \
-    --volume ~/.cyzpod/etc/php7.2/:/usr/local/etc/php-fpm.d/:z \
-    myfpm:7.2 "$@"
+    --volume ~/.cyzpod/etc/php${version}/:/usr/local/etc/php-fpm.d/:z \
+    myfpm:${version} "$@"
   ;;
-composer7.2)
-  podman run --name composer7.2 --rm --interactive --tty \
+composer)
+  podman run --name composer${version} --rm --interactive --tty \
     --volume ~/.composer:/tmp:Z \
     --volume $PWD:/app/:Z \
-    composer:7.2 "$@"
+    composer:${version} "$@"
   ;;
 down)
   podman stop --all
@@ -144,6 +152,7 @@ rm)
   pod.sh --down
   podman rm httpd
   podman rm php72
+  podman rm php73
   podman rm db
   podman pod rm cyzpod
   ;;
@@ -158,7 +167,7 @@ createProject)
   sitesPath=~/.cyzpod/etc/apache2/sites-enabled/020-"$projectName".conf
 
   if [ -f "$sitesPath" ]; then
-    echo -e '\033[0;31m'Error project already exists 
+    echo -e '\033[0;31m'Error project already exists
     exit
   fi
 

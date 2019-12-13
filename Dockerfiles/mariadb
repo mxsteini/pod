@@ -1,2 +1,4 @@
-FROM mariadb:latest
-CMD ["mysqld --user=root"]
+FROM bitnami/mariadb:latest
+USER 0
+ENTRYPOINT [ "/entrypoint.sh" ]
+CMD [ "/run.sh" ]

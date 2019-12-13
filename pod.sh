@@ -77,8 +77,9 @@ install)
   install pod.sh ~/bin/pod.sh
   ;;
 build)
-#  podman build --tag composer:7.2 -f Dockerfiles/composer7.2
-  podman build --tag myfpm:7.2 -f Dockerfiles/php7.2
+  podman build --tag composer:7.2 -f Dockerfiles/composer7.2
+#  podman build --tag myfpm:7.2 -f Dockerfiles/php7.2
+  podman build --tag myfpm-alpine:7.2 -f Dockerfiles/php7.2-alpine
 #  podman build --tag composer:7.3 -f Dockerfiles/composer7.3
 #  podman build --tag myfpm:7.3 -f Dockerfiles/php7.3
   ;;
@@ -89,7 +90,7 @@ create)
   podman run -dit \
     --pod cyzpod \
     --name httpd \
-    --volume $projectDir/:/var/www/:z \
+    --volume $projectDir/:/var/www/html/:z \
     --volume ~/.cyzpod/log/:/usr/local/apache2/logs/:Z \
     --volume ~/.cyzpod/etc/apache2/:/usr/local/apache2/conf/:Z \
     httpd:2.4
@@ -99,7 +100,7 @@ create)
     --volume ~/.cyzpod/log/:/var/log/:z \
     --volume $projectDir/:/var/www/html/:z \
     --volume ~/.cyzpod/etc/php7.2/:/usr/local/etc/php-fpm.d/:z \
-    myfpm:7.2 \
+    myfpm-alpine:7.2 \
     php-fpm -R
 #  podman run -dit \
 #    --pod cyzpod \
@@ -132,18 +133,27 @@ up)
   podman pod start cyzpod
   ;;
 console)
+  source ~/.cyzpod/config
+  pwd=`pwd`
+  defaultDocumentRoot=${pwd#"$projectDir/"}
   podman run --name console${version} --rm --interactive --tty \
     --pod cyzpod \
     --volume ~/.cyzpod/log/:/var/log/:z \
-    --volume $PWD:/var/www/html/:z \
-    --volume ~/.cyzpod/etc/php${version}/:/usr/local/etc/php-fpm.d/:z \
-    myfpm:${version} "$@"
+    --volume $pwd:/var/www/html/$defaultDocumentRoot:z \
+    --volume ~/.cyzpod/etc/php${version}/cli:/usr/local/etc/php:z \
+    myfpm-alpine:${version} sh -c "cd /var/www/html/$defaultDocumentRoot && $*"
   ;;
 composer)
+  source ~/.cyzpod/config
+  pwd=`pwd`
+  defaultDocumentRoot=${pwd#"$projectDir/"}
+  command="cd /var/www/html/$defaultDocumentRoot && $@"
   podman run --name composer${version} --rm --interactive --tty \
+    --volume $pwd:/var/www/html/$defaultDocumentRoot:z \
+    --volume ~/.ssh:/root/.ssh:Z \
     --volume ~/.composer:/tmp:Z \
     --volume $PWD:/app/:Z \
-    composer:${version} "$@"
+    composer:${version} sh -c "cd /var/www/html/$defaultDocumentRoot && $*"
   ;;
 down)
   podman stop --all
@@ -152,7 +162,7 @@ rm)
   pod.sh --down
   podman rm httpd
   podman rm php72
-  podman rm php73
+#  podman rm php73
   podman rm db
   podman pod rm cyzpod
   ;;

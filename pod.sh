@@ -63,12 +63,12 @@ done
 
 case "${command}" in
 init)
-  defaultDir=`pwd`
+  defaultDir=$(pwd)
 
   read -p "Please enter projects dir [$defaultDir]: " projectDir
   projectDir=${projectDir:-${defaultDir}}
 
-  echo 'projectDir="'$projectDir'"' > ~/.cyzpod/config
+  echo 'projectDir="'$projectDir'"' >~/.cyzpod/config
   ;;
 install)
   install -m 777 -d ~/.cyzpod/database
@@ -77,14 +77,14 @@ install)
   install pod.sh ~/bin/pod.sh
   ;;
 build)
-  podman build --tag composer:7.2 -f Dockerfiles/composer7.2
-#  podman build --tag myfpm:7.2 -f Dockerfiles/php7.2
-  podman build --tag myfpm-alpine:7.2 -f Dockerfiles/php7.2-alpine
-#  podman build --tag composer:7.3 -f Dockerfiles/composer7.3
-#  podman build --tag myfpm:7.3 -f Dockerfiles/php7.3
+  #  podman build --tag myfpm:7.2 -f Dockerfiles/php7.2
+  podman build --tag composer:5.6 -f Dockerfiles/composer5.6
+  #podman build --tag myfpm-alpine:5.6 -f Dockerfiles/php5.6-alpine
+  #  podman build --tag composer:7.3 -f Dockerfiles/composer7.3
+  #  podman build --tag myfpm:7.3 -f Dockerfiles/php7.3
   ;;
 create)
-    source ~/.cyzpod/config
+  source ~/.cyzpod/config
   podman pod create --infra --name cyzpod \
     -p 8080:80 -p 3306:3306
   podman run -dit \
@@ -102,14 +102,22 @@ create)
     --volume ~/.cyzpod/etc/php7.2/:/usr/local/etc/php-fpm.d/:z \
     myfpm-alpine:7.2 \
     php-fpm -R
-#  podman run -dit \
-#    --pod cyzpod \
-#    --name php73 \
-#    --volume ~/.cyzpod/log/:/var/log/:z \
-#    --volume $projectDir/:/var/www/html/:z \
-#    --volume ~/.cyzpod/etc/php7.3/:/usr/local/etc/php-fpm.d/:z \
-#    myfpm:7.3 \
-#    php-fpm -R
+  podman run -dit \
+    --pod cyzpod \
+    --name php71 \
+    --volume ~/.cyzpod/log/:/var/log/:z \
+    --volume $projectDir/:/var/www/html/:z \
+    --volume ~/.cyzpod/etc/php7.1/:/usr/local/etc/php-fpm.d/:z \
+    myfpm-alpine:7.1 \
+    php-fpm -R
+  podman run -dit \
+    --pod cyzpod \
+    --name php70 \
+    --volume ~/.cyzpod/log/:/var/log/:z \
+    --volume $projectDir/:/var/www/html/:z \
+    --volume ~/.cyzpod/etc/php7.0/:/usr/local/etc/php-fpm.d/:z \
+    myfpm-alpine:7.0 \
+    php-fpm -R
   podman run -dit \
     --env MARIADB_USER=vagrant \
     --env MARIADB_PASSWORD=vagrant \
@@ -123,7 +131,7 @@ create)
 enter)
   podman exec -it \
     $container \
-    /bin/bash
+    sh
   ;;
 restart)
   pod.sh --down
@@ -134,7 +142,7 @@ up)
   ;;
 console)
   source ~/.cyzpod/config
-  pwd=`pwd`
+  pwd=$(pwd)
   defaultDocumentRoot=${pwd#"$projectDir/"}
   podman run --name console${version} --rm --interactive --tty \
     --pod cyzpod \
@@ -145,7 +153,7 @@ console)
   ;;
 composer)
   source ~/.cyzpod/config
-  pwd=`pwd`
+  pwd=$(pwd)
   defaultDocumentRoot=${pwd#"$projectDir/"}
   command="cd /var/www/html/$defaultDocumentRoot && $@"
   podman run --name composer${version} --rm --interactive --tty \
@@ -162,7 +170,9 @@ rm)
   pod.sh --down
   podman rm httpd
   podman rm php72
-#  podman rm php73
+  podman rm php71
+  podman rm php70
+  #  podman rm php73
   podman rm db
   podman pod rm cyzpod
   ;;
@@ -192,7 +202,7 @@ createProject)
     exit
   fi
 
-  pwd=`pwd`
+  pwd=$(pwd)
   defaultDocumentRoot=${pwd#"$projectDir/"}
 
   read -p "Please enter document root [$defaultDocumentRoot]: " documentRoot

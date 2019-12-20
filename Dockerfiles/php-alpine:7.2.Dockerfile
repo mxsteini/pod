@@ -1,5 +1,6 @@
-FROM php:5.6-fpm-alpine
-RUN apk add --no-cache graphicsmagick freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev libxml2-dev icu-dev g++ && \
+FROM php:7.2-fpm-alpine
+RUN echo 'http://dl-cdn.alpinelinux.org/alpine/edge/community' >> /etc/apk/repositories
+RUN apk add --no-cache ghostscript graphicsmagick freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev libxml2-dev icu-dev g++ && \
   docker-php-ext-configure gd \
     --with-gd \
     --with-freetype-dir=/usr/include/ \
@@ -15,6 +16,7 @@ RUN docker-php-ext-install opcache
 RUN docker-php-ext-install soap
 RUN docker-php-ext-install zip intl
 
+#
 #RUN apk add --no-cache zlib-dev icu-dev g++ && \
 #  NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && \
 #  docker-php-ext-install -j${NPROC} intl && \

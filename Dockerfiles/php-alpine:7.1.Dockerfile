@@ -1,5 +1,6 @@
 FROM php:7.1-fpm-alpine
-RUN apk add --no-cache graphicsmagick freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev libxml2-dev icu-dev g++ && \
+RUN echo 'http://dl-cdn.alpinelinux.org/alpine/edge/community' >> /etc/apk/repositories
+RUN apk add --no-cache ghostscript graphicsmagick freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev libxml2-dev icu-dev g++ && \
   docker-php-ext-configure gd \
     --with-gd \
     --with-freetype-dir=/usr/include/ \
@@ -19,6 +20,7 @@ RUN apk update \
   && pecl install libsodium \
   && apk del --no-cache autoconf make
 
+RUN docker-php-ext-configure opcache
 RUN docker-php-ext-install opcache
 #RUN apk add --no-cache zlib-dev icu-dev g++ && \
 #  NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && \

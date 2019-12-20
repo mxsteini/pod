@@ -26,6 +26,10 @@ for i in "$@"; do
     version=$1
     shift
     ;;
+  --elasticsearch)
+    command='elasticsearch'
+    shift
+    ;;
   --enter)
     command='enter'
     shift
@@ -77,11 +81,15 @@ install)
   install pod.sh ~/bin/pod.sh
   ;;
 build)
-  #  podman build --tag myfpm:7.2 -f Dockerfiles/php7.2
-  podman build --tag composer:5.6 -f Dockerfiles/composer5.6
-  #podman build --tag myfpm-alpine:5.6 -f Dockerfiles/php5.6-alpine
-  #  podman build --tag composer:7.3 -f Dockerfiles/composer7.3
-  #  podman build --tag myfpm:7.3 -f Dockerfiles/php7.3
+  find Dockerfiles -type f -name "*.Dockerfile" | while read dockerfile
+  do
+    if [[ "$dockerfile" -nt ./Dockerfiles/lastbuild || ! -f ./Dockerfiles/lastbuild ]]; then
+      imagename=$(basename "$dockerfile" .Dockerfile)
+      echo $imagename
+      podman build --tag $imagename -f "$dockerfile"
+    fi
+  done
+  touch ./Dockerfiles/lastbuild
   ;;
 create)
   source ~/.cyzpod/config
@@ -100,7 +108,7 @@ create)
     --volume ~/.cyzpod/log/:/var/log/:z \
     --volume $projectDir/:/var/www/html/:z \
     --volume ~/.cyzpod/etc/php7.2/:/usr/local/etc/php-fpm.d/:z \
-    myfpm-alpine:7.2 \
+    localhost/php-alpine:7.2 \
     php-fpm -R
   podman run -dit \
     --pod cyzpod \
@@ -128,6 +136,14 @@ create)
     --volume ~/.cyzpod/database/:/bitnami/mariadb:Z \
     bitnami/mariadb:latest
   ;;
+elasticsearch)
+  podman run -dit \
+    --pod cyzpod \
+    --name elsearch \
+    --volume ~/.cyzpod/database/elasticsearch:/usr/share/elasticsearch/data:Z \
+    --env "discovery.type=single-node" \
+    elasticsearch:2.4.6
+    ;;
 enter)
   podman exec -it \
     $container \
@@ -172,7 +188,6 @@ rm)
   podman rm php72
   podman rm php71
   podman rm php70
-  #  podman rm php73
   podman rm db
   podman pod rm cyzpod
   ;;

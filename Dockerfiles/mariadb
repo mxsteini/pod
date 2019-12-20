@@ -1,4 +1,0 @@
-FROM bitnami/mariadb:latest
-USER 0
-ENTRYPOINT [ "/entrypoint.sh" ]
-CMD [ "/run.sh" ]

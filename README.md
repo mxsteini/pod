@@ -92,7 +92,8 @@ TODO: Add description.
 
 ### --restart
 Restart all cyzpod.
-Same as ```sh
+Same as 
+```sh
 pod.sh --down
 pod.sh --up
 ```

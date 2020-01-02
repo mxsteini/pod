@@ -1,6 +1,6 @@
 # pod.sh
 
-## Inital setup
+## Initial setup
 
 ### Install helper script
 This will install the pod.sh script to `~/bin`. Pleas make sure your PATH contains this directory.
@@ -91,7 +91,7 @@ TODO: Specify from which directory must be run.
 TODO: Add description.
 
 ### --restart
-Restart all cyzpod.
+Restart all containers.
 Same as 
 ```sh
 pod.sh --down

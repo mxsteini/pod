@@ -77,9 +77,10 @@ install)
   install pod.sh ~/bin/pod.sh
   ;;
 build)
-  #  podman build --tag myfpm:7.2 -f Dockerfiles/php7.2
+  #podman build --tag myfpm:7.2 -f Dockerfiles/php7.2
+  podman build --tag myfpm-alpine:7.2 -f Dockerfiles/php7.2-alpine
   podman build --tag composer:5.6 -f Dockerfiles/composer5.6
-  #podman build --tag myfpm-alpine:5.6 -f Dockerfiles/php5.6-alpine
+  podman build --tag myfpm-alpine:5.6 -f Dockerfiles/php5.6-alpine
   #  podman build --tag composer:7.3 -f Dockerfiles/composer7.3
   #  podman build --tag myfpm:7.3 -f Dockerfiles/php7.3
   ;;
@@ -104,19 +105,11 @@ create)
     php-fpm -R
   podman run -dit \
     --pod cyzpod \
-    --name php71 \
+    --name php56 \
     --volume ~/.cyzpod/log/:/var/log/:z \
     --volume $projectDir/:/var/www/html/:z \
-    --volume ~/.cyzpod/etc/php7.1/:/usr/local/etc/php-fpm.d/:z \
-    myfpm-alpine:7.1 \
-    php-fpm -R
-  podman run -dit \
-    --pod cyzpod \
-    --name php70 \
-    --volume ~/.cyzpod/log/:/var/log/:z \
-    --volume $projectDir/:/var/www/html/:z \
-    --volume ~/.cyzpod/etc/php7.0/:/usr/local/etc/php-fpm.d/:z \
-    myfpm-alpine:7.0 \
+    --volume ~/.cyzpod/etc/php5.6/:/usr/local/etc/php-fpm.d/:z \
+    myfpm-alpine:5.6 \
     php-fpm -R
   podman run -dit \
     --env MARIADB_USER=vagrant \
@@ -170,8 +163,9 @@ rm)
   pod.sh --down
   podman rm httpd
   podman rm php72
-  podman rm php71
-  podman rm php70
+  podman rm php56
+  #podman rm php71
+  #podman rm php70
   #  podman rm php73
   podman rm db
   podman pod rm cyzpod

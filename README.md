@@ -23,6 +23,13 @@ pod.sh --init
 pod.sh --create
 ```
 
+## How to run
+
+### Starting the containers
+```sh
+pod.sh --up
+```
+
 ## Adding a TYPO3 project
 
 1. Creating the project

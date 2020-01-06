@@ -116,7 +116,7 @@ create)
     --volume ~/.cyzpod/log/:/var/log/:z \
     --volume $projectDir/:/var/www/html/:z \
     --volume ~/.cyzpod/etc/php7.1/:/usr/local/etc/php-fpm.d/:z \
-    myfpm-alpine:7.1 \
+    localhost/php-alpine:7.1 \
     php-fpm -R
   podman run -dit \
     --pod cyzpod \
@@ -124,7 +124,15 @@ create)
     --volume ~/.cyzpod/log/:/var/log/:z \
     --volume $projectDir/:/var/www/html/:z \
     --volume ~/.cyzpod/etc/php7.0/:/usr/local/etc/php-fpm.d/:z \
-    myfpm-alpine:7.0 \
+    localhost/php-alpine:7.0 \
+    php-fpm -R
+  podman run -dit \
+    --pod cyzpod \
+    --name php56 \
+    --volume ~/.cyzpod/log/:/var/log/:z \
+    --volume $projectDir/:/var/www/html/:z \
+    --volume ~/.cyzpod/etc/php5.6/:/usr/local/etc/php-fpm.d/:z \
+    localhost/php-alpine:5.6 \
     php-fpm -R
   podman run -dit \
     --env MARIADB_USER=vagrant \
@@ -188,6 +196,7 @@ rm)
   podman rm php72
   podman rm php71
   podman rm php70
+  podman rm php56
   podman rm db
   podman pod rm cyzpod
   ;;

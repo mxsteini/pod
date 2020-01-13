@@ -173,7 +173,7 @@ console)
     --volume ~/.cyzpod/log/:/var/log/:z \
     --volume $pwd:/var/www/html/$defaultDocumentRoot:z \
     --volume ~/.cyzpod/etc/php${version}/cli:/usr/local/etc/php:z \
-    myfpm-alpine:${version} sh -c "cd /var/www/html/$defaultDocumentRoot && $*"
+    localhost/php-alpine:${version} sh -c "cd /var/www/html/$defaultDocumentRoot && $*"
   ;;
 composer)
   source ~/.cyzpod/config

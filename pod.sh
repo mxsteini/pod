@@ -94,7 +94,11 @@ build)
 create)
   source ~/.cyzpod/config
   podman pod create --infra --name cyzpod \
-    -p 8080:80 -p 3306:3306
+    -p 8080:80 -p 3306:3306 -p 8025:8025
+  podman run -dit \
+      --pod cyzpod \
+      --name mailhog \
+      mailhog/mailhog:latest
   podman run -dit \
     --pod cyzpod \
     --name httpd \
@@ -173,7 +177,7 @@ console)
     --volume ~/.cyzpod/log/:/var/log/:z \
     --volume $pwd:/var/www/html/$defaultDocumentRoot:z \
     --volume ~/.cyzpod/etc/php${version}/cli:/usr/local/etc/php:z \
-    myfpm-alpine:${version} sh -c "cd /var/www/html/$defaultDocumentRoot && $*"
+    localhost/php-alpine:${version} sh -c "cd /var/www/html/$defaultDocumentRoot && $*"
   ;;
 composer)
   source ~/.cyzpod/config

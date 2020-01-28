@@ -94,7 +94,11 @@ build)
 create)
   source ~/.cyzpod/config
   podman pod create --infra --name cyzpod \
-    -p 8080:80 -p 3306:3306
+    -p 8080:80 -p 3306:3306 -p 8025:8025
+  podman run -dit \
+      --pod cyzpod \
+      --name mailhog \
+      mailhog/mailhog:latest
   podman run -dit \
     --pod cyzpod \
     --name httpd \

@@ -102,40 +102,47 @@ create)
   podman run -dit \
     --pod cyzpod \
     --name httpd \
-    --volume $projectDir/:/var/www/html/:z \
-    --volume ~/.cyzpod/log/:/usr/local/apache2/logs/:Z \
+    --volume $projectDir/:/var/www/html/:ro \
+    --volume ~/.cyzpod/log/:/usr/local/apache2/logs/:z \
     --volume ~/.cyzpod/etc/apache2/:/usr/local/apache2/conf/:Z \
     httpd:2.4
   podman run -dit \
     --pod cyzpod \
     --name php72 \
-    --volume ~/.cyzpod/log/:/var/log/:z \
     --volume $projectDir/:/var/www/html/:z \
-    --volume ~/.cyzpod/etc/php7.2/:/usr/local/etc/php-fpm.d/:z \
+    --volume ~/.cyzpod/log/:/var/log/:z \
+    --volume ~/.cyzpod/etc/php7.2/:/usr/local/etc/php-fpm.d/:Z \
     localhost/php-alpine:7.2 \
     php-fpm -R
   podman run -dit \
     --pod cyzpod \
-    --name php71 \
-    --volume ~/.cyzpod/log/:/var/log/:z \
+    --name php73 \
     --volume $projectDir/:/var/www/html/:z \
-    --volume ~/.cyzpod/etc/php7.1/:/usr/local/etc/php-fpm.d/:z \
-    localhost/php-alpine:7.1 \
+    --volume ~/.cyzpod/log/:/var/log/:z \
+    --volume ~/.cyzpod/etc/php7.3/:/usr/local/etc/php-fpm.d/:Z \
+    localhost/php-alpine:7.3 \
     php-fpm -R
   podman run -dit \
     --pod cyzpod \
-    --name php70 \
-    --volume ~/.cyzpod/log/:/var/log/:z \
+    --name php71 \
     --volume $projectDir/:/var/www/html/:z \
-    --volume ~/.cyzpod/etc/php7.0/:/usr/local/etc/php-fpm.d/:z \
-    localhost/php-alpine:7.0 \
+    --volume ~/.cyzpod/log/:/var/log/:z \
+    --volume ~/.cyzpod/etc/php7.1/:/usr/local/etc/php-fpm.d/ \
+    localhost/php-alpine:7.1 \
     php-fpm -R
+#  podman run -dit \
+#    --pod cyzpod \
+#    --name php70 \
+#    --volume $projectDir/:/var/www/html/:z \
+#    --volume ~/.cyzpod/etc/php7.0/:/usr/local/etc/php-fpm.d/ \
+#    localhost/php-alpine:7.0 \
+#    php-fpm -R
   podman run -dit \
     --pod cyzpod \
     --name php56 \
-    --volume ~/.cyzpod/log/:/var/log/:z \
     --volume $projectDir/:/var/www/html/:z \
-    --volume ~/.cyzpod/etc/php5.6/:/usr/local/etc/php-fpm.d/:z \
+    --volume ~/.cyzpod/log/:/var/log/:z \
+    --volume ~/.cyzpod/etc/php5.6/:/usr/local/etc/php-fpm.d/ \
     localhost/php-alpine:5.6 \
     php-fpm -R
   podman run -dit \
@@ -197,6 +204,7 @@ down)
 rm)
   pod.sh --down
   podman rm httpd
+  podman rm php73
   podman rm php72
   podman rm php71
   podman rm php70

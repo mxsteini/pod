@@ -4,7 +4,7 @@
   DocumentRoot /var/www/html/###DOCUMENTROOT###
 
   SetEnv TYPO3_CONTEXT Development/Podman
-  ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9000/var/www/html/###DOCUMENTROOT###/$1
+  ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9072/var/www/html/###DOCUMENTROOT###/$1
 
   RewriteCond %{REQUEST_FILENAME} \.php$
   RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_URI} !-f

@@ -199,18 +199,11 @@ composer)
     composer:${version} sh -c "cd /var/www/html/$defaultDocumentRoot && $*"
   ;;
 down)
-  podman stop --all
+  podman pod stop cyzpod
   ;;
 rm)
   pod.sh --down
-  podman rm httpd
-  podman rm php73
-  podman rm php72
-  podman rm php71
-  podman rm php70
-  podman rm php56
-  podman rm db
-  podman pod rm cyzpod
+  podman pod rm -f cyzpod
   ;;
 createProject)
   source ~/.cyzpod/config

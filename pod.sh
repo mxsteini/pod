@@ -48,7 +48,7 @@ build)
   ;;
 create)
   podman pod create --infra --name ${pod_prefix}pod \
-    -p 8080:80 -p 3306:3306 -p 3000:3000 -p 1025:1025
+    -p 8080:80 -p 3306:3306 -p 3000:3000 -p 1025:1025 -p 8025:8025
   pod.sh runMailhog
   pod.sh runHttpd
   pod.sh runDb

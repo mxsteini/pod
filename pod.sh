@@ -1,70 +1,26 @@
 #!/usr/bin/env bash
 
-for i in "$@"; do
-  case $i in
-  --up)
-    command='up'
-    shift
-    ;;
-  --down)
-    command='down'
-    shift
-    ;;
-  --create)
-    command='create'
-    shift
-    ;;
-  --composer)
-    command='composer'
-    shift
-    version=$1
-    shift
-    ;;
-  --console)
-    command='console'
-    shift
-    version=$1
-    shift
-    ;;
-  --elasticsearch)
-    command='elasticsearch'
-    shift
-    ;;
-  --enter)
-    command='enter'
-    shift
-    container=$1
-    shift
-    ;;
-  --restart)
-    command='restart'
-    shift
-    ;;
-  --build)
-    command='build'
-    shift
-    ;;
-  --rm)
-    command='rm'
-    shift
-    ;;
-  --init)
-    command='init'
-    shift
-    ;;
-  --install)
-    command='install'
-    shift
-    ;;
-  --createProject)
-    command='createProject'
-    shift
-    projectName=$1
-    shift
-    ;;
-  esac
-done
+command=$1
+shift
 
+case $command in
+console | composer | runPhp)
+  version=$1
+  shift
+  ;;
+enter | restart)
+  container=$1
+  shift
+  ;;
+createProject)
+  projectName=$1
+  shift
+  ;;
+esac
+
+pod_prefix=cyz_
+source ~/.cyzpod/config
+echo running $command
 case "${command}" in
 init)
   defaultDir=$(pwd)
@@ -81,8 +37,7 @@ install)
   install pod.sh ~/bin/pod.sh
   ;;
 build)
-  find Dockerfiles -type f -name "*.Dockerfile" | while read dockerfile
-  do
+  find Dockerfiles -type f -name "*.Dockerfile" | while read dockerfile; do
     if [[ "$dockerfile" -nt ./Dockerfiles/lastbuild || ! -f ./Dockerfiles/lastbuild ]]; then
       imagename=$(basename "$dockerfile" .Dockerfile)
       echo $imagename
@@ -92,105 +47,67 @@ build)
   touch ./Dockerfiles/lastbuild
   ;;
 create)
-  source ~/.cyzpod/config
-  podman pod create --infra --name cyzpod \
-    -p 8080:80 -p 3306:3306 -p 8025:8025 -p 1025:1025
+  podman pod create --infra --name ${pod_prefix}pod \
+    -p 8080:80 -p 3306:3306 -p 3000:3000 -p 1025:1025
+  pod.sh runMailhog
+  pod.sh runHttpd
+  pod.sh runDb
+  ;;
+runMailhog)
   podman run -dit \
-      --pod cyzpod \
-      --name mailhog \
-      mailhog/mailhog:latest
+    --pod ${pod_prefix}pod \
+    --name ${pod_prefix}mailschwein \
+    mailhog/mailhog:latest
+  ;;
+runHttpd)
   podman run -dit \
-    --pod cyzpod \
-    --name httpd \
+    --pod ${pod_prefix}pod \
+    --name ${pod_prefix}httpd \
     --volume $projectDir/:/var/www/html/:ro \
     --volume ~/.cyzpod/log/:/usr/local/apache2/logs/:z \
     --volume ~/.cyzpod/etc/apache2/:/usr/local/apache2/conf/:Z \
-    httpd:2.4
+    httpd:2.4-alpine
+  ;;
+runPhp)
   podman run -dit \
-    --pod cyzpod \
-    --name php72 \
-    --volume $projectDir/:/var/www/html/:z \
+    --pod ${pod_prefix}pod \
+    --name ${pod_prefix}php${version} \
+    --volume $projectDir/:/var/www/html/:Z \
     --volume ~/.cyzpod/log/:/var/log/:z \
-    --volume ~/.cyzpod/etc/php7.2/:/usr/local/etc/php-fpm.d/:Z \
-    localhost/php-alpine:7.2 \
+    --volume ~/.cyzpod/etc/php${version}/:/usr/local/etc/php-fpm.d/:Z \
+    localhost/php-alpine:${version} \
     php-fpm -R
+  ;;
+runDb)
   podman run -dit \
-    --pod cyzpod \
-    --name php73 \
-    --volume $projectDir/:/var/www/html/:z \
-    --volume ~/.cyzpod/log/:/var/log/:z \
-    --volume ~/.cyzpod/etc/php7.3/:/usr/local/etc/php-fpm.d/:Z \
-    localhost/php-alpine:7.3 \
-    php-fpm -R
-  podman run -dit \
-    --pod cyzpod \
-    --name php71 \
-    --volume $projectDir/:/var/www/html/:z \
-    --volume ~/.cyzpod/log/:/var/log/:z \
-    --volume ~/.cyzpod/etc/php7.1/:/usr/local/etc/php-fpm.d/ \
-    localhost/php-alpine:7.1 \
-    php-fpm -R
-#  podman run -dit \
-#    --pod cyzpod \
-#    --name php70 \
-#    --volume $projectDir/:/var/www/html/:z \
-#    --volume ~/.cyzpod/etc/php7.0/:/usr/local/etc/php-fpm.d/ \
-#    localhost/php-alpine:7.0 \
-#    php-fpm -R
-  podman run -dit \
-    --pod cyzpod \
-    --name php56 \
-    --volume $projectDir/:/var/www/html/:z \
-    --volume ~/.cyzpod/log/:/var/log/:z \
-    --volume ~/.cyzpod/etc/php5.6/:/usr/local/etc/php-fpm.d/ \
-    localhost/php-alpine:5.6 \
-    php-fpm -R
-  podman run -dit \
-    --env MARIADB_USER=vagrant \
-    --env MARIADB_PASSWORD=vagrant \
-    --env MARIADB_DATABASE=vagrant \
+    --pod ${pod_prefix}pod \
+    --name ${pod_prefix}db \
     --env MARIADB_ROOT_PASSWORD=root \
-    --pod cyzpod \
-    --name db \
     --volume ~/.cyzpod/database/:/bitnami/mariadb:Z \
     bitnami/mariadb:latest
   ;;
 elasticsearch)
   podman run -dit \
-    --pod cyzpod \
+    --pod ${pod_prefix}pod \
     --name elsearch \
     --volume ~/.cyzpod/database/elasticsearch:/usr/share/elasticsearch/data:Z \
     --env "discovery.type=single-node" \
     elasticsearch:2.4.6
-    ;;
+  ;;
 enter)
   podman exec -it \
     $container \
     sh
   ;;
-restart)
-  pod.sh --down
-  pod.sh --up
-  ;;
-up)
-  podman pod start cyzpod
-  ;;
 console)
-  source ~/.cyzpod/config
   pwd=$(pwd)
   defaultDocumentRoot=${pwd#"$projectDir/"}
-  podman run --name console${version} --rm --interactive --tty \
-    --pod cyzpod \
-    --volume ~/.cyzpod/log/:/var/log/:z \
-    --volume $pwd:/var/www/html/$defaultDocumentRoot:z \
-    --volume ~/.cyzpod/etc/php${version}/cli:/usr/local/etc/php:z \
-    localhost/php-alpine:${version} sh -c "cd /var/www/html/$defaultDocumentRoot && $*"
+  podman exec -it ${pod_prefix}php${version} \
+    sh -c "cd /var/www/html/$defaultDocumentRoot && $*"
   ;;
 composer)
-  source ~/.cyzpod/config
   pwd=$(pwd)
   defaultDocumentRoot=${pwd#"$projectDir/"}
-  command="cd /var/www/html/$defaultDocumentRoot && $@"
   podman run --name composer${version} --rm --interactive --tty \
     --volume $pwd:/var/www/html/$defaultDocumentRoot:z \
     --volume ~/.ssh:/root/.ssh:Z \
@@ -198,12 +115,25 @@ composer)
     --volume $PWD:/app/:Z \
     composer:${version} sh -c "cd /var/www/html/$defaultDocumentRoot && $*"
   ;;
+restart)
+  if [ $container ]; then
+    podman container restart $container
+  else
+    podman pod restart ${pod_prefix}pod
+  fi
+  ;;
+restartHttp)
+  podman exec -it ${pod_prefix}httpd sh -c "kill -USR1 1"
+  ;;
+up)
+  podman pod start ${pod_prefix}pod
+  ;;
 down)
-  podman pod stop cyzpod
+  podman pod stop ${pod_prefix}pod
   ;;
 rm)
-  pod.sh --down
-  podman pod rm -f cyzpod
+  ./pixelpod.sh --down
+  podman pod rm -f ${pod_prefix}pod
   ;;
 createProject)
   source ~/.cyzpod/config
@@ -247,6 +177,9 @@ createProject)
   sed -i "s|###DOCUMENTROOT###|$documentRoot|g" $sitesPath
   sed -i "s|###SERVERNAME###|$projectName.pod|g" $sitesPath
 
+  ;;
+*)
+  echo command not found
   ;;
 esac
 exit

@@ -132,7 +132,7 @@ down)
   podman pod stop ${pod_prefix}pod
   ;;
 rm)
-  ./pixelpod.sh --down
+  pod.sh down
   podman pod rm -f ${pod_prefix}pod
   ;;
 createProject)

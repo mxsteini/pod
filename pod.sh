@@ -8,7 +8,7 @@ console | composer | runPhp)
   version=$1
   shift
   ;;
-enter | restart)
+enter | restart | serverList)
   container=$1
   shift
   ;;
@@ -48,10 +48,11 @@ build)
   ;;
 create)
   podman pod create --infra --name ${pod_prefix}pod \
-    -p 8080:80 -p 3306:3306 -p 3000:3000 -p 1025:1025
+    -p 8080:80 -p 3306:3306 -p 3000:3000 -p 8025:8025 -p 8983:8983
   pod.sh runMailhog
   pod.sh runHttpd
   pod.sh runDb
+  pod.sh runPhp 7.2
   ;;
 runMailhog)
   podman run -dit \
@@ -83,6 +84,7 @@ runDb)
     --pod ${pod_prefix}pod \
     --name ${pod_prefix}db \
     --env MARIADB_ROOT_PASSWORD=root \
+    --volume ~/.cyzpod/etc/mysql/:/etc/mysql/conf.d/:Z \
     --volume ~/.cyzpod/database/:/bitnami/mariadb:Z \
     bitnami/mariadb:latest
   ;;
@@ -132,7 +134,6 @@ down)
   podman pod stop ${pod_prefix}pod
   ;;
 rm)
-  ./pixelpod.sh --down
   podman pod rm -f ${pod_prefix}pod
   ;;
 createProject)
@@ -177,6 +178,16 @@ createProject)
   sed -i "s|###DOCUMENTROOT###|$documentRoot|g" $sitesPath
   sed -i "s|###SERVERNAME###|$projectName.pod|g" $sitesPath
 
+  ;;
+serverList)
+#  grep -r "ServerName (.*)"  ~/.cyzpod/etc/apache2/sites-enabled/*
+  serverNames=$(awk '$1 == "ServerName" {printf "%s ",$2}' ~/.cyzpod/etc/apache2/sites-enabled/*.conf)
+  serverNames="127.0.0.1 "$serverNames
+  serverNames=$(echo $serverNames | awk '{print tolower($0)}')
+  podman exec -it \
+    $container \
+    sh -c "echo \"$serverNames\" >> /etc/hosts"
+  echo added hosts to $container
   ;;
 *)
   echo command not found

@@ -1,5 +1,7 @@
 # pod.sh
 
+NOTE: Below instructions are outdated.
+
 ## Initial setup
 
 ### Install helper script

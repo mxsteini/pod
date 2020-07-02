@@ -79,6 +79,8 @@ RUN apk add --update nodejs npm chromium
 #  docker-php-ext-install -j${NPROC} intl && \
 #  apk del --no-cache zlib-dev icu-dev g++
 
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar; \
+chmod +x wp-cli.phar; mv wp-cli.phar /usr/local/bin/wp
 
 
 

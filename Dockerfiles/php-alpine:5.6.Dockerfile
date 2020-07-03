@@ -21,6 +21,10 @@ RUN docker-php-ext-install zip intl
 #  docker-php-ext-install -j${NPROC} intl && \
 #  apk del --no-cache zlib-dev icu-dev g++
 
+RUN apk --update --no-cache add php5-openssl
+
+RUN sed -i 's/#default_bits/default_bits/' /etc/ssl/openssl.cnf
+
 
 
 

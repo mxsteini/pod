@@ -73,6 +73,11 @@ RUN set -eux; \
   find /tmp -type d -exec chmod -v 1777 {} +
 
 RUN apk add --update nodejs npm chromium
+ENV MUSL_LOCPATH=/usr/local/share/i18n/locales/musl
+RUN apk add --update git cmake make musl-dev gcc gettext-dev libintl
+RUN cd /tmp && git clone https://gitlab.com/rilian-la-te/musl-locales.git
+RUN cd /tmp/musl-locales && cmake . && make && make install
+
 #
 #RUN apk add --no-cache zlib-dev icu-dev g++ && \
 #  NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && \

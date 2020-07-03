@@ -62,6 +62,7 @@ runMailhog)
   ;;
 runHttpd)
   podman run -dit \
+    --net=host \
     --pod ${pod_prefix}pod \
     --name ${pod_prefix}httpd \
     --volume $projectDir/:/var/www/html/:ro \
@@ -71,11 +72,13 @@ runHttpd)
   ;;
 runPhp)
   podman run -dit \
+    --net=host \
     --pod ${pod_prefix}pod \
     --name ${pod_prefix}php${version} \
     --volume $projectDir/:/var/www/html/:Z \
     --volume ~/.cyzpod/log/:/var/log/:z \
     --volume ~/.cyzpod/etc/php${version}/:/usr/local/etc/php-fpm.d/:Z \
+    --volume ~/.cyzpod/etc/php${version}/cli/:/usr/local/etc/php/:Z \
     localhost/php-alpine:${version} \
     php-fpm -R
   ;;

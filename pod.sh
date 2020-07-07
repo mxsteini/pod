@@ -47,12 +47,15 @@ build)
   touch ./Dockerfiles/lastbuild
   ;;
 create)
-  podman pod create --infra --name ${pod_prefix}pod \
+  podman pod create --net=bridge \
+    --infra --name ${pod_prefix}pod \
     -p 8080:80 -p 3306:3306 -p 3000:3000 -p 8025:8025 -p 8983:8983
   pod.sh runMailhog
-  pod.sh runHttpd
-  pod.sh runDb
-  pod.sh runPhp 7.2
+#  pod.sh runDb
+#  echo waiting
+#  sleep 10
+#  pod.sh runPhp 7.2
+#  pod.sh runHttpd
   ;;
 runMailhog)
   podman run -dit \
@@ -61,18 +64,18 @@ runMailhog)
     mailhog/mailhog:latest
   ;;
 runHttpd)
+  podman container rm -f ${pod_prefix}httpd
   podman run -dit \
-    --net=host \
     --pod ${pod_prefix}pod \
     --name ${pod_prefix}httpd \
-    --volume $projectDir/:/var/www/html/:ro \
+    --volume $projectDir/:/usr/local/apache2/htdocs/:z \
     --volume ~/.cyzpod/log/:/usr/local/apache2/logs/:z \
     --volume ~/.cyzpod/etc/apache2/:/usr/local/apache2/conf/:Z \
     httpd:2.4-alpine
   ;;
 runPhp)
+  podman container rm -f ${pod_prefix}php${version}
   podman run -dit \
-    --net=host \
     --pod ${pod_prefix}pod \
     --name ${pod_prefix}php${version} \
     --volume $projectDir/:/var/www/html/:Z \

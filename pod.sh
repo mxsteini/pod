@@ -4,7 +4,7 @@ command=$1
 shift
 
 case $command in
-console | composer | runPhp)
+console | composer | runPhp | runBPhp)
   version=$1
   shift
   ;;
@@ -49,11 +49,11 @@ build)
 create)
   podman pod create \
     --infra --name ${pod_prefix}pod \
-    -p 8080:80 -p 3306:3306 -p 3000:3000 -p 8025:8025 -p 8983:8983
+    -p 8080:80 -p 3306:3306 -p 3000:3000 -p 8025:8025 -p 8983:8983 -p 9200:9200
+  pod.sh runHttpd
   pod.sh runMailhog
   pod.sh runDb
   pod.sh runPhp 7.2
-  pod.sh runHttpd
   ;;
 runMailhog)
   podman run -dit \
@@ -66,10 +66,17 @@ runHttpd)
   podman run -dit \
     --pod ${pod_prefix}pod \
     --name ${pod_prefix}httpd \
-    --volume $projectDir/:/usr/local/apache2/htdocs/:ro \
+    --volume $projectDir/:/var/www/html/:z \
     --volume ~/.cyzpod/log/:/usr/local/apache2/logs/:z \
     --volume ~/.cyzpod/etc/apache2/:/usr/local/apache2/conf/:Z \
     httpd:2.4-alpine
+  ;;
+runRedis)
+  podman container rm -f ${pod_prefix}redis
+  podman run -dit \
+    --pod ${pod_prefix}pod \
+    --name ${pod_prefix}redis \
+    redis:6
   ;;
 runPhp)
   podman container rm -f ${pod_prefix}php${version}
@@ -81,6 +88,17 @@ runPhp)
     --volume ~/.cyzpod/etc/php${version}/:/usr/local/etc/php-fpm.d/:Z \
     --volume ~/.cyzpod/etc/php${version}/cli/:/usr/local/etc/php/:Z \
     localhost/php-alpine:${version} \
+    php-fpm -R
+  ;;
+runBPhp)
+  podman container rm -f ${pod_prefix}php${version}
+  podman run -dit \
+    --pod ${pod_prefix}pod \
+    --name ${pod_prefix}php${version} \
+    --volume $projectDir/:/var/www/html/:Z \
+    --volume ~/.cyzpod/log/:/var/log/:z \
+    --volume ~/.cyzpod/etc/php${version}/:/usr/local/etc/:Z \
+    localhost/php-buster:${version} \
     php-fpm -R
   ;;
 runDb)

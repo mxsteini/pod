@@ -87,5 +87,18 @@ RUN cd /tmp/musl-locales && cmake . && make && make install
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar; \
 chmod +x wp-cli.phar; mv wp-cli.phar /usr/local/bin/wp
 
+RUN rm /usr/bin/iconv \
+  && apk add --no-cache libtool \
+  && curl -SL http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz | tar -xz -C . \
+  && cd libiconv-1.14 \
+  && ./configure --prefix=/usr/local \
+  && curl -SL https://raw.githubusercontent.com/mxe/mxe/7e231efd245996b886b501dad780761205ecf376/src/libiconv-1-fixes.patch \
+  | patch -p1 -u  \
+  && make \
+  && make install \
+  && libtool --finish /usr/local/lib \
+  && cd .. \
+  && rm -rf libiconv-1.14
 
+ENV LD_PRELOAD /usr/local/lib/preloadable_libiconv.so
 

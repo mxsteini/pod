@@ -58,3 +58,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 ENV PATH=$PATH:/root/composer/vendor/bin COMPOSER_ALLOW_SUPERUSER=1
 
 RUN apt-get install -y npm
+
+RUN pecl install -o -f apcu \
+	&&  rm -rf /tmp/pear \
+	&&  docker-php-ext-enable apcu

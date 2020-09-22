@@ -49,7 +49,7 @@ build)
 create)
   podman pod create \
     --infra --name ${pod_prefix}pod \
-    -p 8080:80 -p 3306:3306 -p 3000:3000 -p 8025:8025 -p 8983:8983 -p 9200:9200
+    -p 8080:80 -p 3306:3306 -p 3000:3000 -p 8025:8025 -p 8983:8983 -p 9200:9200 -p 5000:5000
   pod.sh runHttpd
   pod.sh runMailhog
   pod.sh runDb
@@ -116,7 +116,13 @@ elasticsearch)
     --name elsearch \
     --volume ~/.cyzpod/database/elasticsearch:/usr/share/elasticsearch/data:Z \
     --env "discovery.type=single-node" \
-    elasticsearch:2.4.6
+    elasticsearch:5.6.16
+  ;;
+elasticsearchHq)
+  podman run -dit \
+    --pod ${pod_prefix}pod \
+    --name elsearchhq \
+    elastichq/elasticsearch-hq
   ;;
 enter)
   podman exec -it \
@@ -200,9 +206,10 @@ createProject)
   sed -i "s|###DOCUMENTROOT###|$documentRoot|g" $sitesPath
   sed -i "s|###SERVERNAME###|$projectName.pod|g" $sitesPath
 
+  pod.sh restartHttp
   ;;
 serverList)
-#  grep -r "ServerName (.*)"  ~/.cyzpod/etc/apache2/sites-enabled/*
+  #  grep -r "ServerName (.*)"  ~/.cyzpod/etc/apache2/sites-enabled/*
   serverNames=$(awk '$1 == "ServerName" {printf "%s ",$2}' ~/.cyzpod/etc/apache2/sites-enabled/*.conf)
   serverNames="127.0.0.1 "$serverNames
   serverNames=$(echo $serverNames | awk '{print tolower($0)}')

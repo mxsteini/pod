@@ -204,7 +204,7 @@ createProject)
   mysql -h 127.0.0.1 -u root -proot -e "create database $databaseName;"
 
   sed -i "s|###DOCUMENTROOT###|$documentRoot|g" $sitesPath
-  sed -i "s|###SERVERNAME###|$projectName.pod|g" $sitesPath
+  sed -i "s|###SERVERNAME###|$projectName.localhost|g" $sitesPath
 
   pod.sh restartHttp
   ;;

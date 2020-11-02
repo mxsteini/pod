@@ -102,3 +102,4 @@ RUN rm /usr/bin/iconv \
 
 ENV LD_PRELOAD /usr/local/lib/preloadable_libiconv.so
 
+RUN docker-php-ext-install bcmath

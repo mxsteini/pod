@@ -85,6 +85,7 @@ runPhp)
     --name ${pod_prefix}php${version} \
     --volume $projectDir/:/var/www/html/:Z \
     --volume ~/.cyzpod/log/:/var/log/:z \
+    --volume ~/bin/:/opt/bin/:z \
     --volume ~/.cyzpod/etc/php${version}/:/usr/local/etc/php-fpm.d/:Z \
     --volume ~/.cyzpod/etc/php${version}/cli/:/usr/local/etc/php/:Z \
     localhost/php-alpine:${version} \
@@ -96,6 +97,7 @@ runBPhp)
     --pod ${pod_prefix}pod \
     --name ${pod_prefix}php${version} \
     --volume $projectDir/:/var/www/html/:Z \
+    --volume ~/bin/:/opt/bin/:z \
     --volume ~/.cyzpod/log/:/var/log/:z \
     --volume ~/.cyzpod/etc/php${version}/:/usr/local/etc/:Z \
     localhost/php-buster:${version} \
@@ -117,6 +119,15 @@ elasticsearch)
     --volume ~/.cyzpod/database/elasticsearch:/usr/share/elasticsearch/data:Z \
     --env "discovery.type=single-node" \
     elasticsearch:5.6.16
+  ;;
+solr)
+  podman container rm -f solr
+  podman run -dit \
+    --add-host '*.localhost:127.0.0.1' \
+    --pod ${pod_prefix}pod \
+    --name solr \
+    --volume ~/.cyzpod/database/solr:/opt/solr/server/solr:Z \
+    solr:7.6.0
   ;;
 elasticsearchHq)
   podman run -dit \
@@ -204,19 +215,19 @@ createProject)
   mysql -h 127.0.0.1 -u root -proot -e "create database $databaseName;"
 
   sed -i "s|###DOCUMENTROOT###|$documentRoot|g" $sitesPath
-  sed -i "s|###SERVERNAME###|$projectName.pod|g" $sitesPath
+  sed -i "s|###SERVERNAME###|$projectName.localhost|g" $sitesPath
 
   pod.sh restartHttp
   ;;
 serverList)
   #  grep -r "ServerName (.*)"  ~/.cyzpod/etc/apache2/sites-enabled/*
   serverNames=$(awk '$1 == "ServerName" {printf "%s ",$2}' ~/.cyzpod/etc/apache2/sites-enabled/*.conf)
-  serverNames="127.0.0.1 "$serverNames
-  serverNames=$(echo $serverNames | awk '{print tolower($0)}')
-  podman exec -it \
-    $container \
-    sh -c "echo \"$serverNames\" >> /etc/hosts"
-  echo added hosts to $container
+  serverNames=$serverNames":127.0.0.1"
+#  serverNames=$(echo $serverNames | awk '{print tolower($0)}')
+#  podman exec -it \
+#    $container \
+#    sh -c "echo \"$serverNames\" >> /etc/hosts"
+#  echo added hosts to $container
   ;;
 *)
   echo command not found

@@ -56,14 +56,14 @@ create)
   pod.sh runPhp 7.2
   ;;
 runMailhog)
-  podman run -dit \
+  podman run -d \
     --pod ${pod_prefix}pod \
     --name ${pod_prefix}mailschwein \
     mailhog/mailhog:latest
   ;;
 runHttpd)
   podman container rm -f ${pod_prefix}httpd
-  podman run -dit \
+  podman run -d \
     --pod ${pod_prefix}pod \
     --name ${pod_prefix}httpd \
     --volume $projectDir/:/var/www/html/:z \
@@ -73,14 +73,14 @@ runHttpd)
   ;;
 runRedis)
   podman container rm -f ${pod_prefix}redis
-  podman run -dit \
+  podman run -d \
     --pod ${pod_prefix}pod \
     --name ${pod_prefix}redis \
     redis:6
   ;;
 runPhp)
   podman container rm -f ${pod_prefix}php${version}
-  podman run -dit \
+  podman run -d \
     --pod ${pod_prefix}pod \
     --name ${pod_prefix}php${version} \
     --volume $projectDir/:/var/www/html/:Z \
@@ -93,7 +93,7 @@ runPhp)
   ;;
 runBPhp)
   podman container rm -f ${pod_prefix}php${version}
-  podman run -dit \
+  podman run -d \
     --pod ${pod_prefix}pod \
     --name ${pod_prefix}php${version} \
     --volume $projectDir/:/var/www/html/:Z \
@@ -104,7 +104,7 @@ runBPhp)
     php-fpm -R
   ;;
 runDb)
-  podman run -dit \
+  podman run -d \
     --pod ${pod_prefix}pod \
     --name ${pod_prefix}db \
     --env MARIADB_ROOT_PASSWORD=root \
@@ -113,7 +113,7 @@ runDb)
     bitnami/mariadb:latest
   ;;
 elasticsearch)
-  podman run -dit \
+  podman run -d \
     --pod ${pod_prefix}pod \
     --name elsearch \
     --volume ~/.cyzpod/database/elasticsearch:/usr/share/elasticsearch/data:Z \
@@ -122,7 +122,7 @@ elasticsearch)
   ;;
 solr)
   podman container rm -f solr
-  podman run -dit \
+  podman run -d \
     --add-host '*.localhost:127.0.0.1' \
     --pod ${pod_prefix}pod \
     --name solr \
@@ -130,7 +130,7 @@ solr)
     solr:7.6.0
   ;;
 elasticsearchHq)
-  podman run -dit \
+  podman run -d \
     --pod ${pod_prefix}pod \
     --name elsearchhq \
     elastichq/elasticsearch-hq

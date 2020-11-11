@@ -4,7 +4,7 @@ command=$1
 shift
 
 case $command in
-console | composer | runPhp | runBPhp)
+console | wpcli | composer | runPhp | runBPhp)
   version=$1
   shift
   ;;
@@ -145,6 +145,12 @@ console)
   defaultDocumentRoot=${pwd#"$projectDir/"}
   podman exec -it ${pod_prefix}php${version} \
     sh -c "cd /var/www/html/$defaultDocumentRoot && $*"
+  ;;
+wpcli)
+  pwd=$(pwd)
+  defaultDocumentRoot=${pwd#"$projectDir/"}
+  podman exec -it ${pod_prefix}php${version} \
+    sh -c "cd /var/www/html/$defaultDocumentRoot && wp --allow-root $*"
   ;;
 composer)
   pwd=$(pwd)

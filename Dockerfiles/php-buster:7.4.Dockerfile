@@ -62,3 +62,7 @@ RUN apt-get install -y npm
 RUN pecl install -o -f apcu \
 	&&  rm -rf /tmp/pear \
 	&&  docker-php-ext-enable apcu
+
+RUN apt-get update && apt-get install -y libmagickwand-dev --no-install-recommends && rm -rf /var/lib/apt/lists/*
+RUN pecl install imagick
+RUN docker-php-ext-enable imagick

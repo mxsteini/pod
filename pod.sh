@@ -54,6 +54,7 @@ create)
   pod.sh runMailhog
   pod.sh runDb
   pod.sh runPhp 7.2
+  [[ -f create.local.sh ]] && source create.local.sh
   ;;
 runMailhog)
   podman run -d \

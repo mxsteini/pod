@@ -35,6 +35,7 @@ install)
   install -m 777 -d ~/.cyzpod/log
   cp -r etc ~/.cyzpod/
   install pod.sh ~/bin/pod.sh
+  [[ -f create.local.sh ]] && install create.local.sh ~/bin/create.local.sh
   ;;
 build)
   find Dockerfiles -type f -name "*.Dockerfile" | while read dockerfile; do
@@ -54,7 +55,7 @@ create)
   pod.sh runMailhog
   pod.sh runDb
   pod.sh runPhp 7.2
-  [[ -f create.local.sh ]] && source create.local.sh
+  [[ -f ~/bin/create.local.sh ]] && source ~/bin/create.local.sh
   ;;
 runMailhog)
   podman run -d \

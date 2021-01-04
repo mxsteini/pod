@@ -100,6 +100,7 @@ runBPhp)
     --volume $projectDir/:/var/www/html/:Z \
     --volume ~/bin/:/opt/bin/:z \
     --volume ~/.cyzpod/log/:/var/log/:z \
+    --volume ~/.cyzpod/etc/ImageMagick-6/:/etc/ImageMagick-6/:Z \
     --volume ~/.cyzpod/etc/php${version}/:/usr/local/etc/:Z \
     localhost/php-buster:${version} \
     php-fpm -R

@@ -66,3 +66,13 @@ RUN pecl install -o -f apcu \
 RUN apt-get update && apt-get install -y libmagickwand-dev --no-install-recommends && rm -rf /var/lib/apt/lists/*
 RUN pecl install imagick
 RUN docker-php-ext-enable imagick
+RUN cd /tmp && \
+	rm -rf ImageMagick-7* && \
+	curl https://urban-warrior.org/ImageMagick/download/ImageMagick.tar.gz --output ImageMagick.tar.gz && \
+	tar xvzf ImageMagick.tar.gz && \
+	cd ImageMagick-7*/ && \
+	./configure && \
+	make && \
+	make install && \
+	ldconfig /usr/local/lib && \
+	rm -rf ImageMagick-7*

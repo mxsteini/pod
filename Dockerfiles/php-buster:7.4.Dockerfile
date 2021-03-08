@@ -76,3 +76,5 @@ RUN cd /tmp && \
 	make install && \
 	ldconfig /usr/local/lib && \
 	rm -rf ImageMagick-7*
+RUN docker-php-ext-configure gd --with-jpeg --with-freetype
+RUN docker-php-ext-install gd

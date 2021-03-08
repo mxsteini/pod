@@ -18,6 +18,7 @@ createProject)
   ;;
 esac
 
+SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 pod_prefix=cyz_
 source ~/.cyzpod/config
 echo running $command
@@ -48,27 +49,32 @@ build)
   touch ./Dockerfiles/lastbuild
   ;;
 create)
+  podman pod rm -f ${pod_prefix}pod
   podman pod create \
     --infra --name ${pod_prefix}pod \
     -p 8080:80 -p 3306:3306 -p 3000:3000 -p 8025:8025 -p 1025:1025 -p 8983:8983 -p 9200:9200 -p 5000:5000
-  pod.sh runHttpd
-  pod.sh runMailhog
-  pod.sh runDb
-  pod.sh runPhp 7.2
+  $SCRIPTPATH/pod.sh runHttpd
+  $SCRIPTPATH/pod.sh runMailhog
+  $SCRIPTPATH/pod.sh runDb
+  $SCRIPTPATH/pod.sh runPhp 7.2
+  $SCRIPTPATH/pod.sh runBPhp 7.4
   [[ -f ~/bin/create.local.sh ]] && source ~/bin/create.local.sh
   ;;
 runMailhog)
   podman run -d \
+    --security-opt label=disable \
     --pod ${pod_prefix}pod \
     --name ${pod_prefix}mailschwein \
     mailhog/mailhog:latest
   ;;
 runHttpd)
   podman container rm -f ${pod_prefix}httpd
+  echo $projectDir
   podman run -d \
+    --security-opt label=disable \
     --pod ${pod_prefix}pod \
     --name ${pod_prefix}httpd \
-    --volume $projectDir/:/var/www/html/:z \
+    --mount type=bind,src=$projectDir,dst=/var/www/html \
     --volume ~/.cyzpod/log/:/usr/local/apache2/logs/:z \
     --volume ~/.cyzpod/etc/apache2/:/usr/local/apache2/conf/:Z \
     httpd:2.4-alpine
@@ -76,6 +82,7 @@ runHttpd)
 runRedis)
   podman container rm -f ${pod_prefix}redis
   podman run -d \
+    --security-opt label=disable \
     --pod ${pod_prefix}pod \
     --name ${pod_prefix}redis \
     redis:6
@@ -83,9 +90,10 @@ runRedis)
 runPhp)
   podman container rm -f ${pod_prefix}php${version}
   podman run -d \
+    --security-opt label=disable \
     --pod ${pod_prefix}pod \
     --name ${pod_prefix}php${version} \
-    --volume $projectDir/:/var/www/html/:Z \
+    --mount type=bind,src=$projectDir,dst=/var/www/html \
     --volume ~/.cyzpod/log/:/var/log/:z \
     --volume ~/bin/:/opt/bin/:z \
     --volume ~/.cyzpod/etc/php${version}/:/usr/local/etc/php-fpm.d/:Z \
@@ -96,9 +104,10 @@ runPhp)
 runBPhp)
   podman container rm -f ${pod_prefix}php${version}
   podman run -d \
+    --security-opt label=disable \
     --pod ${pod_prefix}pod \
     --name ${pod_prefix}php${version} \
-    --volume $projectDir/:/var/www/html/:Z \
+    --mount type=bind,src=$projectDir,dst=/var/www/html \
     --volume ~/bin/:/opt/bin/:z \
     --volume ~/.cyzpod/log/:/var/log/:z \
     --volume ~/.cyzpod/etc/ImageMagick-6/:/etc/ImageMagick-6/:Z \
@@ -108,24 +117,28 @@ runBPhp)
   ;;
 runDb)
   podman run -d \
+    --security-opt label=disable \
     --pod ${pod_prefix}pod \
     --name ${pod_prefix}db \
     --env MARIADB_ROOT_PASSWORD=root \
     --volume ~/.cyzpod/etc/mysql/:/etc/mysql/conf.d/:Z \
-    --volume ~/.cyzpod/database/:/bitnami/mariadb:Z \
+    --mount type=bind,src=$HOME/.cyzpod/database,dst=/bitnami/mariadb \
     bitnami/mariadb:latest
   ;;
 elasticsearch)
   podman run -d \
+    --security-opt label=disable \
     --pod ${pod_prefix}pod \
     --name elsearch \
-    --volume ~/.cyzpod/database/elasticsearch:/usr/share/elasticsearch/data:Z \
+    --mount type=bind,src=$HOME/.cyzpod/database/elasticsearch,dst=/usr/share/elasticsearch/data \
     --env "discovery.type=single-node" \
+    --env "ES_JAVA_OPTS=-Xms256m -Xmx256m" \
     elasticsearch:5.6.16
   ;;
 solr)
   podman container rm -f solr
   podman run -d \
+    --security-opt label=disable \
     --add-host '*.localhost:127.0.0.1' \
     --pod ${pod_prefix}pod \
     --name solr \
@@ -134,6 +147,7 @@ solr)
   ;;
 elasticsearchHq)
   podman run -d \
+    --security-opt label=disable \
     --pod ${pod_prefix}pod \
     --name elsearchhq \
     elastichq/elasticsearch-hq
